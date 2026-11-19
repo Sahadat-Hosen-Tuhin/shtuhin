@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useCallback, useState } from 'react';
 import Lenis from 'lenis';
 import './ScrollStack.css';
 
@@ -52,6 +52,19 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
   const initialTopsRef = useRef<number[]>([]);
   const lastTransformsRef = useRef(new Map());
   const isUpdatingRef = useRef(false);
+  const [isStackingEnabled, setIsStackingEnabled] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches
+  );
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 1024px)');
+    const handleChange = (event: MediaQueryListEvent) => {
+      setIsStackingEnabled(event.matches);
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   const calculateProgress = useCallback((scrollTop: number, start: number, end: number) => {
     if (scrollTop < start) return 0;
@@ -218,10 +231,51 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
   useLayoutEffect(() => {
     const cards = Array.from(
-      document.querySelectorAll('.scroll-stack-card')
+      scrollerRef.current?.querySelectorAll('.scroll-stack-card') ?? []
     ) as HTMLElement[];
 
     cardsRef.current = cards;
+
+    const cleanup = () => {
+      window.removeEventListener('resize', refreshCardPositions);
+      if (animationFrameRef.current !== null) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
+      lenisRef.current?.destroy();
+      lenisRef.current = null;
+      stackCompletedRef.current = false;
+      cardsRef.current = [];
+      initialTopsRef.current = [];
+      lastTransformsRef.current.clear();
+      isUpdatingRef.current = false;
+    };
+
+    const refreshCardPositions = () => {
+      cards.forEach((card) => {
+        card.style.transform = 'translateZ(0)';
+        card.style.filter = '';
+      });
+      initialTopsRef.current = cards.map((card) => {
+        const rect = card.getBoundingClientRect();
+        return rect.top + window.scrollY;
+      });
+      lastTransformsRef.current.clear();
+      updateCardTransforms();
+    };
+
+    if (!isStackingEnabled) {
+      cards.forEach((card, i) => {
+        card.style.zIndex = '';
+        card.style.marginBottom = i < cards.length - 1 ? `${itemDistance}px` : '';
+        card.style.willChange = '';
+        card.style.transform = '';
+        card.style.filter = '';
+        card.style.backfaceVisibility = '';
+        card.style.perspective = '';
+      });
+      return cleanup;
+    }
 
     // Record static natural top positions before any transforms are applied
     initialTopsRef.current = cards.map((card) => {
@@ -243,20 +297,8 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
 
     setupLenis();
     updateCardTransforms();
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (lenisRef.current) {
-        lenisRef.current.destroy();
-      }
-      stackCompletedRef.current = false;
-      cardsRef.current = [];
-      initialTopsRef.current = [];
-      lastTransformsRef.current.clear();
-      isUpdatingRef.current = false;
-    };
+    window.addEventListener('resize', refreshCardPositions);
+    return cleanup;
   }, [
     itemDistance,
     itemScale,
@@ -268,6 +310,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     blurAmount,
     useWindowScroll,
     onStackComplete,
+    isStackingEnabled,
     setupLenis,
     updateCardTransforms,
   ]);

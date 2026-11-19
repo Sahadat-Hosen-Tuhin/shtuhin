@@ -136,7 +136,7 @@ export const HeroSection: React.FC = () => {
 
           {/* Navigation Links */}
           <nav
-            className="hidden md:flex items-center space-x-8 lg:space-x-10 text-[11px] tracking-[0.28em] font-light uppercase text-[#C4B5A5] absolute left-1/2 -translate-x-1/2"
+            className="hidden lg:flex items-center space-x-8 lg:space-x-10 text-[11px] tracking-[0.28em] font-light uppercase text-[#C4B5A5] absolute left-1/2 -translate-x-1/2"
             style={{ fontFamily: "'Montserrat', sans-serif" }}
           >
             {navItems.map((item) => (
@@ -191,24 +191,8 @@ export const HeroSection: React.FC = () => {
           </div>
         </header>
 
-        <nav
-          aria-label="Mobile navigation"
-          className="mt-6 flex items-center justify-between gap-2 text-[8px] font-light tracking-[0.1em] uppercase text-[#C4B5A5] md:hidden"
-          style={{ fontFamily: "'Montserrat', sans-serif" }}
-        >
-          {navItems.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className="py-2 transition-colors hover:text-[#FFF5EB]"
-            >
-              {item.name}
-            </a>
-          ))}
-        </nav>
-
         {/* Main Hero Row */}
-        <div className="relative my-auto flex w-full flex-col items-center justify-between py-12 md:flex-row md:py-4">
+        <div className="relative my-auto flex w-full flex-col items-start justify-between py-12 md:flex-row md:items-center md:py-4">
           
           {/* LEFT: Balanced Headline & Actions */}
           <motion.div
