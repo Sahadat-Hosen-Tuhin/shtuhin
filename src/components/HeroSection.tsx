@@ -108,7 +108,7 @@ export const HeroSection: React.FC = () => {
       {/* ================= 2. FIXED IMAGE LAYER ================= */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-black flex items-center justify-end">
         <img
-          src="/videos/TuhinHeroBanner.png"
+          src="/videos/herosectionBanner.webp"
           alt="SH Tuhin"
           className="h-full w-full max-w-none object-cover object-[72%_center] opacity-80 md:h-screen md:w-auto md:object-contain md:object-center md:opacity-100 md:origin-right md:scale-[0.98] lg:scale-100"
         />

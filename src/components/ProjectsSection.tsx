@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import ScrollStack, { ScrollStackItem } from './ScrollStack';
-import corptalkImage from '../assets/corptalk (1).png';
-import s4Image from '../assets/s4.png';
-import maisonBistroImage from '../assets/maisonbistro.png';
-import developerStationImage from '../assets/ds25.png';
+import corptalkImage from '../assets/corptalk (1).webp';
+import s4Image from '../assets/s4.webp';
+import maisonBistroImage from '../assets/maisonbistro.webp';
+import developerStationImage from '../assets/ds25.webp';
 
 interface Project {
   number: string;
